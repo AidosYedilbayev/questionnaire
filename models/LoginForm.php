@@ -12,10 +12,10 @@ use yii\base\Model;
  */
 class LoginForm extends Model
 {
-    public $username;
-    public $password;
-    public $rememberMe = true;
-    private $_user = false;
+    public  $username;
+    public  $password;
+    public  $rememberMe = true;
+    private $_user      = false;
 
     /**
      * @return array the validation rules.
