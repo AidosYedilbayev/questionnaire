@@ -2,11 +2,10 @@
 
 use yii\helpers\Html;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\models\Questionnaire */
 
-$this->title = 'Create Questionnaire';
+$this->title                   = 'Создать опрос';
 $this->params['breadcrumbs'][] = ['label' => 'Questionnaires', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

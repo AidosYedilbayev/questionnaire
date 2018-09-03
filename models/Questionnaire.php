@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "questionnaire".
@@ -45,10 +48,24 @@ class Questionnaire extends \yii\db\ActiveRecord
     {
         return [
             'id'          => 'ID',
-            'title'       => 'Title',
-            'description' => 'Description',
-            'created_at'  => 'Created At',
-            'updated_at'  => 'Updated At',
+            'title'       => 'Название опроса',
+            'description' => 'Описание опроса',
+            'created_at'  => 'Создано',
+            'updated_at'  => 'Обновлено',
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class'      => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value'      => new Expression('NOW()'),
+            ],
         ];
     }
 
