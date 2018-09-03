@@ -38,7 +38,7 @@ class Question extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 255],
-            [['questionnaire_id'], 'exist', 'skipOnError' => true, 'targetClass' => Questionnaire::className(), 'targetAttribute' => ['questionnaire_id' => 'id']],
+            [['questionnaire_id'], 'exist', 'skipOnError' => true, 'targetClass' => Questionnaire::class, 'targetAttribute' => ['questionnaire_id' => 'id']],
         ];
     }
 
@@ -62,7 +62,7 @@ class Question extends \yii\db\ActiveRecord
      */
     public function getAnswers()
     {
-        return $this->hasMany(Answer::className(), ['question_id' => 'id']);
+        return $this->hasMany(Answer::class, ['question_id' => 'id']);
     }
 
     /**
@@ -70,7 +70,7 @@ class Question extends \yii\db\ActiveRecord
      */
     public function getQuestionnaire()
     {
-        return $this->hasOne(Questionnaire::className(), ['id' => 'questionnaire_id']);
+        return $this->hasOne(Questionnaire::class, ['id' => 'questionnaire_id']);
     }
 
     /**
@@ -78,15 +78,6 @@ class Question extends \yii\db\ActiveRecord
      */
     public function getResults()
     {
-        return $this->hasMany(Result::className(), ['question_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \app\models\query\QuestionQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \app\models\query\QuestionQuery(get_called_class());
+        return $this->hasMany(Result::class, ['question_id' => 'id']);
     }
 }

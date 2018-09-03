@@ -55,15 +55,6 @@ class Interviewee extends \yii\db\ActiveRecord
      */
     public function getResults()
     {
-        return $this->hasMany(Result::className(), ['interviewee_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \app\models\query\IntervieweeQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \app\models\query\IntervieweeQuery(get_called_class());
+        return $this->hasMany(Result::class, ['interviewee_id' => 'id']);
     }
 }

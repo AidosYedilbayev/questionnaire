@@ -57,7 +57,7 @@ class Questionnaire extends \yii\db\ActiveRecord
      */
     public function getQuestions()
     {
-        return $this->hasMany(Question::className(), ['questionnaire_id' => 'id']);
+        return $this->hasMany(Question::class, ['questionnaire_id' => 'id']);
     }
 
     /**
@@ -65,15 +65,6 @@ class Questionnaire extends \yii\db\ActiveRecord
      */
     public function getResults()
     {
-        return $this->hasMany(Result::className(), ['questionnaire_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \app\models\query\QuestionnaireQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \app\models\query\QuestionnaireQuery(get_called_class());
+        return $this->hasMany(Result::class, ['questionnaire_id' => 'id']);
     }
 }

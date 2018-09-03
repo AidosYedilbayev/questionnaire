@@ -38,10 +38,10 @@ class Result extends \yii\db\ActiveRecord
             [['questionnaire_id', 'question_id', 'answer_id', 'interviewee_id'], 'required'],
             [['questionnaire_id', 'question_id', 'answer_id', 'interviewee_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Answer::className(), 'targetAttribute' => ['answer_id' => 'id']],
-            [['interviewee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Interviewee::className(), 'targetAttribute' => ['interviewee_id' => 'id']],
-            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
-            [['questionnaire_id'], 'exist', 'skipOnError' => true, 'targetClass' => Questionnaire::className(), 'targetAttribute' => ['questionnaire_id' => 'id']],
+            [['answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Answer::class, 'targetAttribute' => ['answer_id' => 'id']],
+            [['interviewee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Interviewee::class, 'targetAttribute' => ['interviewee_id' => 'id']],
+            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::class, 'targetAttribute' => ['question_id' => 'id']],
+            [['questionnaire_id'], 'exist', 'skipOnError' => true, 'targetClass' => Questionnaire::class, 'targetAttribute' => ['questionnaire_id' => 'id']],
         ];
     }
 
@@ -66,7 +66,7 @@ class Result extends \yii\db\ActiveRecord
      */
     public function getAnswer()
     {
-        return $this->hasOne(Answer::className(), ['id' => 'answer_id']);
+        return $this->hasOne(Answer::class, ['id' => 'answer_id']);
     }
 
     /**
@@ -74,7 +74,7 @@ class Result extends \yii\db\ActiveRecord
      */
     public function getInterviewee()
     {
-        return $this->hasOne(Interviewee::className(), ['id' => 'interviewee_id']);
+        return $this->hasOne(Interviewee::class, ['id' => 'interviewee_id']);
     }
 
     /**
@@ -82,7 +82,7 @@ class Result extends \yii\db\ActiveRecord
      */
     public function getQuestion()
     {
-        return $this->hasOne(Question::className(), ['id' => 'question_id']);
+        return $this->hasOne(Question::class, ['id' => 'question_id']);
     }
 
     /**
@@ -90,15 +90,6 @@ class Result extends \yii\db\ActiveRecord
      */
     public function getQuestionnaire()
     {
-        return $this->hasOne(Questionnaire::className(), ['id' => 'questionnaire_id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \app\models\query\ResultQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \app\models\query\ResultQuery(get_called_class());
+        return $this->hasOne(Questionnaire::class, ['id' => 'questionnaire_id']);
     }
 }

@@ -37,7 +37,7 @@ class Answer extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 255],
-            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['question_id' => 'id']],
+            [['question_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::class, 'targetAttribute' => ['question_id' => 'id']],
         ];
     }
 
@@ -61,7 +61,7 @@ class Answer extends \yii\db\ActiveRecord
      */
     public function getQuestion()
     {
-        return $this->hasOne(Question::className(), ['id' => 'question_id']);
+        return $this->hasOne(Question::class, ['id' => 'question_id']);
     }
 
     /**
@@ -69,15 +69,6 @@ class Answer extends \yii\db\ActiveRecord
      */
     public function getResults()
     {
-        return $this->hasMany(Result::className(), ['answer_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \app\models\query\AnswerQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \app\models\query\AnswerQuery(get_called_class());
+        return $this->hasMany(Result::class, ['answer_id' => 'id']);
     }
 }
