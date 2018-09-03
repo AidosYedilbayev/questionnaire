@@ -16,7 +16,6 @@ class ContactForm extends Model
     public $body;
     public $verifyCode;
 
-
     /**
      * @return array the validation rules.
      */
@@ -44,6 +43,7 @@ class ContactForm extends Model
 
     /**
      * Sends an email to the specified email address using the information collected by this model.
+     *
      * @param string $email the target email address
      * @return bool whether the model passes validation
      */
