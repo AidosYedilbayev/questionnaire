@@ -81,7 +81,6 @@ class QuestionnaireController extends Controller
         $modelsAnswer       = [[new Answer()]];
 
         if ($modelQuestionnaire->load(Yii::$app->request->post())) {
-
             $modelsQuestion = Model::createMultiple(Question::class);
             Model::loadMultiple($modelsQuestion, Yii::$app->request->post());
 
