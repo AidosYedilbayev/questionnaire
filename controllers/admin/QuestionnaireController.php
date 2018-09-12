@@ -4,13 +4,14 @@ namespace app\controllers\admin;
 
 use app\models\Answer;
 use app\models\Question;
-use Yii;
 use app\models\Questionnaire;
 use app\models\search\QuestionnaireSearch;
+use Yii;
 use yii\base\Model;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * QuestionnaireController implements the CRUD actions for Questionnaire model.
@@ -51,9 +52,9 @@ class QuestionnaireController extends Controller
     /**
      * Displays a single Questionnaire model.
      *
-     * @param integer $id
+     * @param  integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
@@ -67,34 +68,54 @@ class QuestionnaireController extends Controller
     }
 
     /**
+     * Finds the Questionnaire model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     *
+     * @param integer $id
+     * @return Questionnaire
+     * @throws NotFoundHttpException
+     */
+    protected function findModel($id)
+    {
+        if (($model = Questionnaire::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
      * Creates a new Questionnaire model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      *
      * @return mixed
+     * @throws \yii\db\Exception
      */
     public function actionCreate()
     {
         $modelQuestionnaire = new Questionnaire();
-        $modelQuestions     = [new Question()];
-        $modelAnswers       = [[new Answer()]];
+        $modelsQuestion     = [new Question()];
+        $modelsAnswer       = [[new Answer()]];
 
-        if ($questionnaire->load(Yii::$app->request->post())) {
+        if ($modelQuestionnaire->load(Yii::$app->request->post())) {
 
-            $questions = Model::createMultiple(Question::class);
-            Model::loadMultiple($questions, Yii::$app->request->post());
+            $modelsQuestion = Model::createMultiple(Question::class);
+            Model::loadMultiple($modelsQuestion, Yii::$app->request->post());
 
-            // validate person and houses models
-            $valid = $questionnaire->validate();
-            $valid = Model::validateMultiple($questions) && $valid;
+            // validate questionnaire and questions models
+            $valid = $modelQuestionnaire->validate();
+            $valid = Model::validateMultiple($modelsQuestion) && $valid;
 
             if (isset($_POST['Answer'][0][0])) {
                 foreach ($_POST['Answer'] as $indexQuestion => $answers) {
                     foreach ($answers as $indexAnswer => $answer) {
                         $data['Answer'] = $answer;
-                        $modelAnswer = new Room;
-                        $modelRoom->load($data);
-                        $modelsRoom[$indexHouse][$indexRoom] = $modelRoom;
-                        $valid = $modelRoom->validate();
+                        $modelAnswer    = new Answer;
+
+                        $modelAnswer->load($data);
+
+                        $modelsAnswer[$indexQuestion][$indexAnswer] = $modelAnswer;
+                        $valid                                      = $modelAnswer->validate();
                     }
                 }
             }
@@ -102,23 +123,24 @@ class QuestionnaireController extends Controller
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
-                    if ($flag = $modelPerson->save(false)) {
-                        foreach ($modelsHouse as $indexHouse => $modelHouse) {
-
+                    if ($flag = $modelQuestionnaire->save(false)) {
+                        foreach ($modelsQuestion as $indexQuestion => $modelQuestion) {
                             if ($flag === false) {
                                 break;
                             }
 
-                            $modelHouse->person_id = $modelPerson->id;
+                            /** @var Question $modelQuestion */
+                            $modelQuestion->questionnaire_id = $modelQuestionnaire->id;
 
-                            if (!($flag = $modelHouse->save(false))) {
+                            if (!($flag = $modelQuestionnaire->save(false))) {
                                 break;
                             }
 
-                            if (isset($modelsRoom[$indexHouse]) && is_array($modelsRoom[$indexHouse])) {
-                                foreach ($modelsRoom[$indexHouse] as $indexRoom => $modelRoom) {
-                                    $modelRoom->house_id = $modelHouse->id;
-                                    if (!($flag = $modelRoom->save(false))) {
+                            if (isset($modelsAnswer[$indexQuestion]) && is_array($modelsAnswer[$indexQuestion])) {
+                                foreach ($modelsAnswer[$indexQuestion] as $modelAnswer) {
+                                    /** @var Answer $modelAnswer */
+                                    $modelAnswer->question_id = $modelQuestion->id;
+                                    if (!($flag = $modelAnswer->save(false))) {
                                         break;
                                     }
                                 }
@@ -128,22 +150,20 @@ class QuestionnaireController extends Controller
 
                     if ($flag) {
                         $transaction->commit();
-                        return $this->redirect(['view', 'id' => $modelPerson->id]);
+                        return $this->redirect(['view', 'id' => $modelQuestionnaire->id]);
                     } else {
                         $transaction->rollBack();
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $transaction->rollBack();
                 }
             }
         }
 
-
-
-
-
         return $this->render('create', [
-            'model' => $questionnaire,
+            'modelQuestionnaire' => $modelQuestionnaire,
+            'modelsQuestion'     => (empty($modelsQuestion)) ? [new Question()] : $modelsQuestion,
+            'modelsAnswer'       => (empty($modelsAnswer)) ? [[new Answer()]] : $modelsAnswer,
         ]);
     }
 
@@ -151,20 +171,112 @@ class QuestionnaireController extends Controller
      * Updates an existing Questionnaire model.
      * If update is successful, the browser will be redirected to the 'view' page.
      *
-     * @param integer $id
+     * @param  integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException
+     * @throws \yii\db\Exception
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $modelQuestionnaire = $this->findModel($id);
+        $modelsQuestion     = $modelQuestionnaire->questions;
+        $modelsAnswer       = [];
+        $oldAnswers         = [];
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (!empty($modelsQuestion)) {
+            foreach ($modelsQuestion as $indexQuestion => $modelQuestion) {
+                $answers                      = $modelQuestion->answers;
+                $modelsAnswer[$indexQuestion] = $answers;
+                $oldAnswers                   = ArrayHelper::merge(ArrayHelper::index($answers, 'id'), $oldAnswers);
+            }
+        }
+
+        if ($modelQuestionnaire->load(Yii::$app->request->post())) {
+            // reset
+            $modelsAnswer = [];
+
+            $oldQuestionIDs = ArrayHelper::map($modelsQuestion, 'id', 'id');
+            $modelsQuestion = Model::createMultiple(Question::class, $modelsQuestion);
+
+            Model::loadMultiple($modelsQuestion, Yii::$app->request->post());
+
+            $deletedQuestionIDs = array_diff($oldQuestionIDs, array_filter(ArrayHelper::map($modelsQuestion, 'id', 'id')));
+
+            // validate questionnaire and questions models
+            $valid = $modelQuestionnaire->validate();
+            $valid = Model::validateMultiple($modelsQuestion) && $valid;
+
+            $answersIDs = [];
+            if (isset($_POST['Room'][0][0])) {
+                foreach ($_POST['Room'] as $indexQuestion => $answers) {
+                    $answersIDs = ArrayHelper::merge($answersIDs, array_filter(ArrayHelper::getColumn($answers, 'id')));
+                    foreach ($answers as $indexAnswer => $answer) {
+                        $data['Room'] = $answer;
+                        $modelAnswer  = (isset($answer['id']) && isset($oldAnswers[$answer['id']])) ? $oldAnswers[$answer['id']] : new Answer;
+
+                        $modelAnswer->load($data);
+
+                        $modelsAnswer[$indexQuestion][$indexAnswer] = $modelAnswer;
+                        $valid                                      = $modelAnswer->validate();
+                    }
+                }
+            }
+
+            $oldAnswersIDs     = ArrayHelper::getColumn($oldAnswers, 'id');
+            $deletedAnswersIDs = array_diff($oldAnswersIDs, $answersIDs);
+
+            if ($valid) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    if ($flag = $modelQuestionnaire->save(false)) {
+                        if (!empty($deletedAnswersIDs)) {
+                            Answer::deleteAll(['id' => $deletedAnswersIDs]);
+                        }
+
+                        if (!empty($deletedQuestionIDs)) {
+                            Question::deleteAll(['id' => $deletedQuestionIDs]);
+                        }
+
+                        foreach ($modelsQuestion as $indexQuestion => $modelQuestion) {
+                            if ($flag === false) {
+                                break;
+                            }
+
+                            /** @var Question $modelQuestion */
+                            $modelQuestion->questionnaire_id = $modelQuestionnaire->id;
+
+                            if (!($flag = $modelQuestion->save(false))) {
+                                break;
+                            }
+
+                            if (isset($modelsAnswer[$indexQuestion]) && is_array($modelsAnswer[$indexQuestion])) {
+                                foreach ($modelsAnswer[$indexQuestion] as $indexAnswer => $modelAnswer) {
+                                    /** @var Answer $modelAnswer */
+                                    $modelAnswer->question_id = $modelQuestion->id;
+                                    if (!($flag = $modelAnswer->save(false))) {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($flag) {
+                        $transaction->commit();
+                        return $this->redirect(['view', 'id' => $modelQuestionnaire->id]);
+                    } else {
+                        $transaction->rollBack();
+                    }
+                } catch (\Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
         }
 
         return $this->render('update', [
-            'model' => $model,
+            'modelQuestionnaire' => $modelQuestionnaire,
+            'modelsQuestion'     => (empty($modelsQuestion)) ? [new Question] : $modelsQuestion,
+            'modelsAnswer'       => (empty($modelsAnswer)) ? [[new Answer]] : $modelsAnswer,
         ]);
     }
 
@@ -172,31 +284,21 @@ class QuestionnaireController extends Controller
      * Deletes an existing Questionnaire model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      *
-     * @param integer $id
+     * @param  integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     * @throws \yii\web\NotFoundHttpException
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $name  = $model->title;
 
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Questionnaire model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @param integer $id
-     * @return Questionnaire the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Questionnaire::findOne($id)) !== null) {
-            return $model;
+        if ($model->delete()) {
+            Yii::$app->session->setFlash('success', "Опрос <strong> $name </strong> успешно удален");
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $this->redirect(['index']);
     }
 }
