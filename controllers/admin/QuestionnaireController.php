@@ -288,7 +288,7 @@ class QuestionnaireController extends Controller
      * Finds the Questionnaire model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      *
-     * @param integer $id
+     * @param  integer $id
      * @return Questionnaire
      * @throws NotFoundHttpException
      */
