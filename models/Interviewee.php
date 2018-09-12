@@ -2,7 +2,9 @@
 
 namespace app\models;
 
-use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "interviewee".
@@ -14,7 +16,7 @@ use Yii;
  * @property string   $updated_at
  * @property Result[] $results
  */
-class Interviewee extends \yii\db\ActiveRecord
+class Interviewee extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -47,6 +49,20 @@ class Interviewee extends \yii\db\ActiveRecord
             'name'       => 'Name',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class'      => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value'      => new Expression('NOW()'),
+            ],
         ];
     }
 

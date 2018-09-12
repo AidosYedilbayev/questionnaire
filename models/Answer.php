@@ -1,8 +1,9 @@
 <?php
-
 namespace app\models;
 
-use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "answer".
@@ -16,7 +17,7 @@ use Yii;
  * @property Question $question
  * @property Result[] $results
  */
-class Answer extends \yii\db\ActiveRecord
+class Answer extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -48,11 +49,25 @@ class Answer extends \yii\db\ActiveRecord
     {
         return [
             'id'          => 'ID',
-            'question_id' => 'Question ID',
-            'title'       => 'Title',
-            'description' => 'Description',
-            'created_at'  => 'Created At',
-            'updated_at'  => 'Updated At',
+            'question_id' => 'Вопрос',
+            'title'       => 'Ответ',
+            'description' => 'Описание',
+            'created_at'  => 'Создано',
+            'updated_at'  => 'Обновлено',
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class'      => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value'      => new Expression('NOW()'),
+            ],
         ];
     }
 

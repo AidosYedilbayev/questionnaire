@@ -2,20 +2,26 @@
 
 use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Questionnaire */
+/**
+ * @var yii\web\View              $this
+ * @var \app\models\Questionnaire $modelQuestionnaire
+ * @var array                     $modelsQuestion
+ * @var array                     $modelsAnswer
+ */
 
-$this->title = 'Update Questionnaire: ' . $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Questionnaires', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title                   = 'Изменить опрос: ' . $modelQuestionnaire->title;
+$this->params['breadcrumbs'][] = ['label' => 'Опросы', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $modelQuestionnaire->title, 'url' => ['view', 'id' => $modelQuestionnaire->id]];
+$this->params['breadcrumbs'][] = 'Изменить';
 ?>
 <div class="questionnaire-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'modelQuestionnaire' => $modelQuestionnaire,
+        'modelsQuestion'     => $modelsQuestion,
+        'modelsAnswer'       => $modelsAnswer,
     ]) ?>
 
 </div>

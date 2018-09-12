@@ -6,7 +6,6 @@ use yii\widgets\ActiveForm;
 
 /**
  * @var yii\web\View              $this
- * @var app\models\Questionnaire  $modelQuestionnaire
  * @var yii\widgets\ActiveForm    $form
  * @var \app\models\Questionnaire $modelQuestionnaire
  * @var array                     $modelsQuestion
@@ -20,14 +19,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
-    <div class="row">
-        <div class="col-sm-6">
-            <?= $form->field($modelQuestionnaire, 'title')->textInput(['maxlength' => true]) ?>
-        </div>
-        <div class="col-sm-6">
-            <?= $form->field($modelQuestionnaire, 'description')->textInput(['maxlength' => true]) ?>
-        </div>
-    </div>
+    <?= $form->field($modelQuestionnaire, 'title')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($modelQuestionnaire, 'description')->textarea(['rows' => 3]) ?>
 
     <div class="padding-v-md">
         <div class="line line-dashed"></div>
@@ -48,10 +41,11 @@ use yii\widgets\ActiveForm;
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
-            <th>questions</th>
-            <th style="width: 450px;">answers</th>
-            <th class="text-center" style="width: 90px;">
-                <button type="button" class="add-question btn btn-success btn-xs"><span class="fa fa-plus"></span>
+            <th>Вопросы</th>
+            <th style="width: 450px;">Варианты ответов</th>
+            <th class="text-center" style="width: 5%;">
+                <button type="button" class="add-question btn btn-success btn-xs">
+                    <span class="glyphicon glyphicon-plus"></span>
                 </button>
             </th>
         </tr>
@@ -59,14 +53,27 @@ use yii\widgets\ActiveForm;
         <tbody class="container-items">
         <?php foreach ($modelsQuestion as $indexQuestion => $modelQuestion): ?>
             <tr class="question-item">
-                <td class="vcenter">
+                <td class="vcenter" style="width: 30%; verti">
                     <?php
                     // necessary for update action.
                     if (!$modelQuestion->isNewRecord) {
                         echo Html::activeHiddenInput($modelQuestion, "[{$indexQuestion}]id");
                     }
                     ?>
-                    <?= $form->field($modelQuestion, "[{$indexQuestion}]title")->label(false)->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($modelQuestion, "[{$indexQuestion}]title")
+                        ->label(false)
+                        ->textInput([
+                            'maxlength'   => true,
+                            'placeholder' => 'Вопрос',
+                        ])
+                    ?>
+                    <?= $form->field($modelQuestion, "[{$indexQuestion}]description")
+                        ->label(false)
+                        ->textarea([
+                            'rows'        => 2,
+                            'placeholder' => 'Описание',
+                        ])
+                    ?>
                 </td>
                 <td>
                     <?= $this->render('_form-answers', [
@@ -75,9 +82,9 @@ use yii\widgets\ActiveForm;
                         'modelsAnswer'  => $modelsAnswer[$indexQuestion],
                     ]) ?>
                 </td>
-                <td class="text-center vcenter" style="width: 90px; verti">
+                <td class="text-center vcenter" style="width: 5%; verti">
                     <button type="button" class="remove-question btn btn-danger btn-xs">
-                        <span class="fa fa-minus"></span>
+                        <span class="glyphicon glyphicon-minus"></span>
                     </button>
                 </td>
             </tr>

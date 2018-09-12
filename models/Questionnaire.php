@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -18,7 +17,7 @@ use yii\db\Expression;
  * @property Question[] $questions
  * @property Result[]   $results
  */
-class Questionnaire extends \yii\db\ActiveRecord
+class Questionnaire extends ActiveRecord
 {
     /**
      * {@inheritdoc}

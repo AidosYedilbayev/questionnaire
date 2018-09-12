@@ -2,11 +2,11 @@
 namespace app\controllers\admin;
 
 use app\models\Answer;
+use app\models\Model;
 use app\models\search\QuestionnaireSearch;
 use app\models\Question;
 use app\models\Questionnaire;
 use Yii;
-use yii\base\Model;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -72,6 +72,7 @@ class QuestionnaireController extends Controller
      *
      * @return mixed
      * @throws \yii\db\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function actionCreate()
     {
@@ -157,6 +158,7 @@ class QuestionnaireController extends Controller
      * @return mixed
      * @throws NotFoundHttpException
      * @throws \yii\db\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function actionUpdate($id)
     {

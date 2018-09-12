@@ -46,7 +46,20 @@ use yii\helpers\Html;
                         echo Html::activeHiddenInput($modelAnswer, "[{$indexQuestion}][{$indexAnswer}]id");
                     }
                     ?>
-                    <?= $form->field($modelAnswer, "[{$indexQuestion}][{$indexAnswer}]title")->label(false)->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($modelAnswer, "[{$indexQuestion}][{$indexAnswer}]title")
+                        ->label(false)
+                        ->textInput([
+                            'maxlength' => true,
+                            'placeholder' => 'Ответ',
+                        ])
+                    ?>
+                    <?= $form->field($modelAnswer, "[{$indexQuestion}][{$indexAnswer}]description")
+                        ->label(false)
+                        ->textarea([
+                            'rows' => 2,
+                            'placeholder' => 'Описание',
+                        ])
+                    ?>
                 </td>
                 <td class="text-center vcenter" style="width: 90px;">
                     <button type="button" class="remove-answer btn btn-danger btn-xs">
