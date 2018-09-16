@@ -1,7 +1,7 @@
 <?php
 
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a('Создать опрос', ['create'], ['class' => 'btn btn-success']) ?>
@@ -25,14 +24,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel'  => $searchModel,
         'columns'      => [
-            ['class' => 'yii\grid\SerialColumn'],
+            [
+                'class' => 'yii\grid\SerialColumn',
+            ],
 
             'title',
             'description:ntext',
             'created_at',
             'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class'    => 'yii\grid\ActionColumn',
+                'template' => '{update}{delete}',
+            ],
         ],
     ]); ?>
     <?php Pjax::end(); ?>

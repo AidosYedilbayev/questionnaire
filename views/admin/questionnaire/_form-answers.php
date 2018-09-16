@@ -23,7 +23,7 @@ use yii\helpers\Html;
     'deleteButton'    => '.remove-answer',
     'model'           => $modelsAnswer[0],
     'formId'          => 'dynamic-form',
-    'formFields'      => ['title'],
+    'formFields'      => ['title', 'description'],
 ]); ?>
     <table class="table table-bordered">
         <thead>

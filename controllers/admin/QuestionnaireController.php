@@ -49,24 +49,6 @@ class QuestionnaireController extends Controller
     }
 
     /**
-     * Displays a single Questionnaire model.
-     *
-     * @param  integer $id
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
-    public function actionView($id)
-    {
-        $questionnaire = $this->findModel($id);
-        $questions     = $questionnaire->getQuestions();
-
-        return $this->render('view', [
-            'questionnaire' => $questionnaire,
-            'questions'     => $questions,
-        ]);
-    }
-
-    /**
      * Creates a new Questionnaire model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      *
@@ -84,7 +66,6 @@ class QuestionnaireController extends Controller
             $modelsQuestion = Model::createMultiple(Question::class);
             Model::loadMultiple($modelsQuestion, Yii::$app->request->post());
 
-            // validate questionnaire and questions models
             $valid = $modelQuestionnaire->validate();
             $valid = Model::validateMultiple($modelsQuestion) && $valid;
 
@@ -114,7 +95,7 @@ class QuestionnaireController extends Controller
                             /** @var Question $modelQuestion */
                             $modelQuestion->questionnaire_id = $modelQuestionnaire->id;
 
-                            if (!($flag = $modelQuestionnaire->save(false))) {
+                            if (!($flag = $modelQuestion->save(false))) {
                                 break;
                             }
 
@@ -132,7 +113,7 @@ class QuestionnaireController extends Controller
 
                     if ($flag) {
                         $transaction->commit();
-                        return $this->redirect(['view', 'id' => $modelQuestionnaire->id]);
+                        return $this->redirect(['index']);
                     } else {
                         $transaction->rollBack();
                     }
@@ -175,7 +156,7 @@ class QuestionnaireController extends Controller
         }
 
         if ($modelQuestionnaire->load(Yii::$app->request->post())) {
-            // reset
+            // сброс
             $modelsAnswer = [];
 
             $oldQuestionIDs = ArrayHelper::map($modelsQuestion, 'id', 'id');
@@ -185,16 +166,15 @@ class QuestionnaireController extends Controller
 
             $deletedQuestionIDs = array_diff($oldQuestionIDs, array_filter(ArrayHelper::map($modelsQuestion, 'id', 'id')));
 
-            // validate questionnaire and questions models
             $valid = $modelQuestionnaire->validate();
             $valid = Model::validateMultiple($modelsQuestion) && $valid;
 
             $answersIDs = [];
-            if (isset($_POST['Room'][0][0])) {
-                foreach ($_POST['Room'] as $indexQuestion => $answers) {
+            if (isset($_POST['Answer'][0][0])) {
+                foreach ($_POST['Answer'] as $indexQuestion => $answers) {
                     $answersIDs = ArrayHelper::merge($answersIDs, array_filter(ArrayHelper::getColumn($answers, 'id')));
                     foreach ($answers as $indexAnswer => $answer) {
-                        $data['Room'] = $answer;
+                        $data['Answer'] = $answer;
                         $modelAnswer  = (isset($answer['id']) && isset($oldAnswers[$answer['id']])) ? $oldAnswers[$answer['id']] : new Answer;
 
                         $modelAnswer->load($data);
@@ -246,7 +226,6 @@ class QuestionnaireController extends Controller
 
                     if ($flag) {
                         $transaction->commit();
-                        return $this->redirect(['view', 'id' => $modelQuestionnaire->id]);
                     } else {
                         $transaction->rollBack();
                     }
@@ -259,7 +238,7 @@ class QuestionnaireController extends Controller
         return $this->render('update', [
             'modelQuestionnaire' => $modelQuestionnaire,
             'modelsQuestion'     => (empty($modelsQuestion)) ? [new Question] : $modelsQuestion,
-            'modelsAnswer'       => (empty($modelsAnswer)) ? [[new Answer]] : $modelsAnswer,
+            'modelsAnswer'       => (empty($modelsAnswer[0])) ? [[new Answer]] : $modelsAnswer,
         ]);
     }
 

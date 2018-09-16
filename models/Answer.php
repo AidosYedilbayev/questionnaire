@@ -33,7 +33,7 @@ class Answer extends ActiveRecord
     public function rules()
     {
         return [
-            [['question_id', 'title'], 'required'],
+            [['title'], 'required'],
             [['question_id'], 'integer'],
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'safe'],

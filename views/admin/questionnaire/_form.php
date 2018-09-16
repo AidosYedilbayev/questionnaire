@@ -36,7 +36,7 @@ use yii\widgets\ActiveForm;
         'deleteButton'    => '.remove-question',
         'model'           => $modelsQuestion[0],
         'formId'          => 'dynamic-form',
-        'formFields'      => ['title'],
+        'formFields'      => ['title', 'description'],
     ]); ?>
     <table class="table table-bordered table-striped">
         <thead>

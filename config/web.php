@@ -4,7 +4,9 @@ $params = require __DIR__ . '/params.php';
 $db     = require __DIR__ . '/db.php';
 
 $config = [
-    'id'         => 'Questionnaire',
+    'id'         => 'questionnaire',
+    'name'       => 'Опросник',
+    'language'   => 'ru-RU',
     'basePath'   => dirname(__DIR__),
     'bootstrap'  => ['log'],
     'aliases'    => [

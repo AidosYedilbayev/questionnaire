@@ -11,8 +11,7 @@ use yii\helpers\Html;
 
 $this->title                   = 'Изменить опрос: ' . $modelQuestionnaire->title;
 $this->params['breadcrumbs'][] = ['label' => 'Опросы', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $modelQuestionnaire->title, 'url' => ['view', 'id' => $modelQuestionnaire->id]];
-$this->params['breadcrumbs'][] = 'Изменить';
+$this->params['breadcrumbs'][] = ['label' => $modelQuestionnaire->title];
 ?>
 <div class="questionnaire-update">
 

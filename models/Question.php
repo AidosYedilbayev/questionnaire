@@ -34,7 +34,7 @@ class Question extends ActiveRecord
     public function rules()
     {
         return [
-            [['questionnaire_id', 'title'], 'required'],
+            [['title'], 'required'],
             [['questionnaire_id'], 'integer'],
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
