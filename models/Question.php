@@ -4,6 +4,7 @@ namespace app\models;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "question".
@@ -78,6 +79,14 @@ class Question extends ActiveRecord
     public function getAnswers()
     {
         return $this->hasMany(Answer::class, ['question_id' => 'id']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getArrayAnswers(): array
+    {
+        return ArrayHelper::map($this->answers, 'id', 'title');
     }
 
     /**

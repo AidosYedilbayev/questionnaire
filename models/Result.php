@@ -37,7 +37,7 @@ class Result extends ActiveRecord
     public function rules()
     {
         return [
-            [['questionnaire_id', 'question_id', 'answer_id', 'interviewee_id'], 'required'],
+            [['questionnaire_id', 'question_id', 'answer_id'], 'required'],
             [['questionnaire_id', 'question_id', 'answer_id', 'interviewee_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Answer::class, 'targetAttribute' => ['answer_id' => 'id']],
@@ -54,12 +54,12 @@ class Result extends ActiveRecord
     {
         return [
             'id'               => 'ID',
-            'questionnaire_id' => 'Questionnaire ID',
-            'question_id'      => 'Question ID',
-            'answer_id'        => 'Answer ID',
-            'interviewee_id'   => 'Interviewee ID',
-            'created_at'       => 'Created At',
-            'updated_at'       => 'Updated At',
+            'questionnaire_id' => 'Опрос',
+            'question_id'      => 'Вопрос',
+            'answer_id'        => 'Ответ',
+            'interviewee_id'   => 'Отвечавший',
+            'created_at'       => 'Создано',
+            'updated_at'       => 'Обновлено',
         ];
     }
 

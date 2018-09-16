@@ -2,13 +2,16 @@
 
 namespace app\controllers;
 
+use app\models\ContactForm;
+use app\models\Interviewee;
+use app\models\LoginForm;
+use app\models\Model;
+use app\models\Result;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 
 class SiteController extends Controller
 {
@@ -62,6 +65,61 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Saves result of the questionnaire
+     *
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
+     */
+    public function actionSaveResult()
+    {
+        if (Yii::$app->request->isPost) {
+            /** @var Result[] $models */
+            $models = Model::createMultiple(Result::class);
+            Model::loadMultiple($models, Yii::$app->request->post());
+
+            $valid     = Model::validateMultiple($models);
+            $sessionId = Yii::$app->session->id;
+
+            if ($valid) {
+                $transaction = Yii::$app->db->beginTransaction();
+
+                try {
+                    $flag        = true;
+                    $interviewee = Interviewee::findOne(['session_id' => $sessionId]);
+
+                    if (empty($interviewee)) {
+                        $interviewee             = new Interviewee;
+                        $interviewee->session_id = $sessionId;
+                        $flag                    = $interviewee->save();
+                    }
+
+                    foreach ($models as $model) {
+                        if ($flag === false) {
+                            break;
+                        }
+
+                        $model->interviewee_id = $interviewee->id;
+
+                        if (!($flag = $model->save(false))) {
+                            break;
+                        }
+                    }
+
+                    if ($flag) {
+                        $transaction->commit();
+                    } else {
+                        $transaction->rollBack();
+                    }
+                } catch (\Exception $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+
+        return $this->redirect('index');
     }
 
     /**
