@@ -5,6 +5,7 @@ namespace app\models;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "result".
@@ -83,6 +84,12 @@ class Result extends ActiveRecord
     public function getAnswer()
     {
         return $this->hasOne(Answer::class, ['id' => 'answer_id']);
+    }
+
+    public static function getPassedPolls(int $intervieweeId): array
+    {
+        $result = self::find()->where(['interviewee_id' => $intervieweeId])->groupBy('questionnaire_id')->all();
+        return ArrayHelper::getColumn($result, 'questionnaire_id');
     }
 
     /**

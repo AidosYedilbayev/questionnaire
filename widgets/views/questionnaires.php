@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
 
             <?php $form = ActiveForm::begin([
                 'id'     => "questionnaire-$model->id",
-                'action' => 'site/save-result',
+                'action' => '/site/save-result',
             ]); ?>
 
             <?php foreach ($model->questions as $questionIndex => $question): ?>
